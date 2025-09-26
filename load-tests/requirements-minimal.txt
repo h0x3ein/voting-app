@@ -1,0 +1,7 @@
+# Minimal requirements for load testing (Python 3.13 compatible)
+# Use this if the full requirements.txt fails to install
+
+locust>=2.17.0
+requests>=2.31.0
+redis>=5.0.0
+pymysql>=1.1.0

@@ -1,0 +1,15 @@
+# Core load testing dependencies
+locust>=2.17.0
+requests>=2.31.0
+
+# Data analysis and visualization (optional)
+numpy>=1.24.0
+matplotlib>=3.7.0
+
+# Database and cache connections
+redis>=5.0.0
+pymysql>=1.1.0
+
+# Build dependencies (ensure compatibility)
+setuptools>=65.0.0
+wheel>=0.38.0

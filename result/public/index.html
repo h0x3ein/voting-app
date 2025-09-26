@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Results</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .result-card.cats {
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .result-card.dogs {
+            border-left: 5px solid #4834d4;
+        }
+        
+        .result-emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .result-label {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .result-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .result-percentage {
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        .total-votes {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .total-votes h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .total-votes .count {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-cats {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+        }
+        
+        .progress-dogs {
+            background: linear-gradient(90deg, #4834d4, #686de0);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .winner {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #333;
+        }
+        
+        .winner h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .last-updated {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Voting Results</h1>
+        <p class="subtitle">Real-time results from our pet preference poll</p>
+        
+        <div class="status" id="status">
+            <span id="connection-status">Connecting...</span>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading results...</p>
+        </div>
+        
+        <div class="total-votes">
+            <h3>Total Votes Cast</h3>
+            <div class="count" id="total-count">0</div>
+        </div>
+        
+        <div class="results-grid">
+            <div class="result-card cats">
+                <div class="result-emoji">🐱</div>
+                <div class="result-label">Cats</div>
+                <div class="result-count" id="cats-count">0</div>
+                <div class="result-percentage" id="cats-percentage">0%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-cats" id="cats-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="result-card dogs">
+                <div class="result-emoji">🐶</div>
+                <div class="result-label">Dogs</div>
+                <div class="result-count" id="dogs-count">0</div>
+                <div class="result-percentage" id="dogs-percentage">0%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-dogs" id="dogs-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="winner" id="winner" style="display: none;">
+            <h3>🏆 Current Leader</h3>
+            <div id="winner-text"></div>
+        </div>
+        
+        <div class="last-updated">
+            Last updated: <span id="last-updated">Never</span>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let isConnected = false;
+        
+        // DOM elements
+        const statusElement = document.getElementById('status');
+        const connectionStatusElement = document.getElementById('connection-status');
+        const loadingElement = document.getElementById('loading');
+        const totalCountElement = document.getElementById('total-count');
+        const catsCountElement = document.getElementById('cats-count');
+        const dogsCountElement = document.getElementById('dogs-count');
+        const catsPercentageElement = document.getElementById('cats-percentage');
+        const dogsPercentageElement = document.getElementById('dogs-percentage');
+        const catsProgressElement = document.getElementById('cats-progress');
+        const dogsProgressElement = document.getElementById('dogs-progress');
+        const winnerElement = document.getElementById('winner');
+        const winnerTextElement = document.getElementById('winner-text');
+        const lastUpdatedElement = document.getElementById('last-updated');
+        
+        // Socket events
+        socket.on('connect', () => {
+            isConnected = true;
+            updateConnectionStatus();
+            loadingElement.style.display = 'block';
+        });
+        
+        socket.on('disconnect', () => {
+            isConnected = false;
+            updateConnectionStatus();
+        });
+        
+        socket.on('results', (data) => {
+            updateResults(data);
+            loadingElement.style.display = 'none';
+        });
+        
+        function updateConnectionStatus() {
+            if (isConnected) {
+                statusElement.className = 'status connected';
+                connectionStatusElement.textContent = 'Connected - Live Updates';
+            } else {
+                statusElement.className = 'status disconnected';
+                connectionStatusElement.textContent = 'Disconnected - Trying to reconnect...';
+            }
+        }
+        
+        function updateResults(results) {
+            const { cats, dogs, total } = results;
+            
+            // Update counts
+            totalCountElement.textContent = total.toLocaleString();
+            catsCountElement.textContent = cats.toLocaleString();
+            dogsCountElement.textContent = dogs.toLocaleString();
+            
+            // Calculate percentages
+            const catsPercent = total > 0 ? Math.round((cats / total) * 100) : 0;
+            const dogsPercent = total > 0 ? Math.round((dogs / total) * 100) : 0;
+            
+            catsPercentageElement.textContent = `${catsPercent}%`;
+            dogsPercentageElement.textContent = `${dogsPercent}%`;
+            
+            // Update progress bars
+            catsProgressElement.style.width = `${catsPercent}%`;
+            dogsProgressElement.style.width = `${dogsPercent}%`;
+            
+            // Update winner
+            if (total > 0) {
+                if (cats > dogs) {
+                    winnerTextElement.textContent = `Cats are leading with ${cats} votes!`;
+                    winnerElement.style.display = 'block';
+                } else if (dogs > cats) {
+                    winnerTextElement.textContent = `Dogs are leading with ${dogs} votes!`;
+                    winnerElement.style.display = 'block';
+                } else {
+                    winnerTextElement.textContent = "It's a tie! The competition is fierce!";
+                    winnerElement.style.display = 'block';
+                }
+            } else {
+                winnerElement.style.display = 'none';
+            }
+            
+            // Update last updated time
+            lastUpdatedElement.textContent = new Date().toLocaleTimeString();
+        }
+        
+        // Initial connection attempt
+        updateConnectionStatus();
+        
+        // Fallback: fetch results every 10 seconds if not connected
+        setInterval(() => {
+            if (!isConnected) {
+                fetch('/api/results')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateResults(data);
+                        loadingElement.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch results:', error);
+                    });
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+# Load Testing Configuration for Voting Application
+
+# Service endpoints
+services:
+  vote:
+    url: "http://localhost:5000"
+    health_endpoint: "/health"
+    vote_endpoint: "/vote"
+    metrics_endpoint: "/metrics"
+  
+  worker:
+    url: "http://localhost:8080"
+    health_endpoint: "/health"
+    metrics_endpoint: "/metrics"
+  
+  result:
+    url: "http://localhost:3000"
+    health_endpoint: "/health"
+    api_endpoint: "/api/results"
+    metrics_endpoint: "/metrics"
+
+# Dependencies
+dependencies:
+  redis:
+    host: "localhost"
+    port: 6379
+    db: 0
+    queue_name: "votes"
+  
+  mysql:
+    host: "localhost"
+    port: 3306
+    user: "voting_user"
+    password: "voting_pass"
+    database: "voting"
+
+# Load test scenarios
+scenarios:
+  light_load:
+    description: "Normal usage simulation"
+    vote_service:
+      users: 10
+      spawn_rate: 2
+      duration: "2m"
+    worker_service:
+      votes: 500
+      workers: 5
+      duration: "2m"
+  
+  medium_load:
+    description: "Moderate traffic simulation"
+    vote_service:
+      users: 25
+      spawn_rate: 5
+      duration: "3m"
+    worker_service:
+      votes: 1500
+      workers: 10
+      duration: "3m"
+  
+  heavy_load:
+    description: "Peak traffic simulation"
+    vote_service:
+      users: 50
+      spawn_rate: 10
+      duration: "5m"
+    worker_service:
+      votes: 3000
+      workers: 15
+      duration: "5m"
+  
+  stress_test:
+    description: "System limit testing"
+    vote_service:
+      users: 100
+      spawn_rate: 20
+      duration: "5m"
+    worker_service:
+      votes: 5000
+      workers: 25
+      duration: "5m"
+  
+  endurance_test:
+    description: "Long-running stability test"
+    vote_service:
+      users: 30
+      spawn_rate: 5
+      duration: "15m"
+    worker_service:
+      votes: 10000
+      workers: 10
+      duration: "15m"
+
+# Performance thresholds
+thresholds:
+  vote_service:
+    response_time_p95: 500  # milliseconds
+    response_time_p99: 1000 # milliseconds
+    error_rate: 1.0         # percent
+    throughput_min: 50      # requests per second
+  
+  worker_service:
+    processing_rate_min: 100 # votes per second
+    queue_depth_max: 1000    # maximum queue length
+    error_rate: 0.5          # percent
+  
+  database:
+    connection_pool_max: 50
+    query_time_max: 100     # milliseconds
+
+# Monitoring
+monitoring:
+  metrics_collection_interval: 5  # seconds
+  report_generation: true
+  real_time_dashboard: false
+
+# Output configuration
+output:
+  results_directory: "results"
+  csv_export: true
+  html_reports: true
+  json_export: true
+  prometheus_metrics: false
