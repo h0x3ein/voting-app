@@ -1,0 +1,66 @@
+version: "3.9"
+
+networks: 
+  vote-net: 
+    name: vote-net
+
+volumes:
+  db_data:
+services:
+  vote:
+    image: h0x3ein/rvote:0.1
+    environment:
+      REDIS_HOST: redis
+    ports:
+    - 5000:5000
+    networks:
+    - vote-net
+    depends_on: 
+    - redis
+    restart: unless-stopped
+  worker:
+    image: h0x3ein/rworker:0.1
+    environment:
+      REDIS_HOST: redis 
+      MYSQL_HOST: db
+    networks:
+    - vote-net
+    depends_on:
+    - redis
+    - db
+    restart: unless-stopped
+
+  result:
+    image: h0x3ein/rresult:0.1
+    ports:
+    - 3000:3000
+    environment:
+      MYSQL_HOST: db
+    networks:
+    - vote-net
+    depends_on:
+    - db
+    restart: unless-stopped
+  redis:
+    image: redis:7.2-alpine 
+    networks:
+    - vote-net
+    ports:
+    - 6379:6379
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    ports:
+    - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: voting
+      MYSQL_USER: voteuser
+      MYSQL_PASSWORD: votepass
+    networks:
+      - vote-net
+    restart: unless-stopped
+    
+    volumes:
+      - db_data:/var/lib/mysql
