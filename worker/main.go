@@ -132,7 +132,7 @@ func loadConfig() *Config {
 		MySQLHost:     getEnv("MYSQL_HOST", "localhost"),
 		MySQLPort:     mysqlPort,
 		MySQLUser:     getEnv("MYSQL_USER", "root"),
-		MySQLPassword: getEnv("MYSQL_PASSWORD", "rootpass"),
+		MySQLPassword: getEnv("MYSQL_PASSWORD", ""),
 		MySQLDatabase: getEnv("MYSQL_DATABASE", "voting"),
 		Port:          port,
 		Host:          getEnv("HOST", "0.0.0.0"),
