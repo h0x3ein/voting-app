@@ -52,6 +52,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v5.0.0
       
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.6.0
+
       - name:  Set up Docker Buildx
         uses:  docker/setup-buildx-action@v3.11.1
       
@@ -83,6 +86,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v5.0.0
       
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.6.0
+        
       - name:  Set up Docker Buildx
         uses:  docker/setup-buildx-action@v3.11.1
       
