@@ -33,4 +33,4 @@ jobs:
       service: ${{ matrix.service }}
       image: ${{ matrix.image }}
       context: ${{ matrix.context }}
-      secrets: inherit
+    secrets: inherit
