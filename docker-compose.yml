@@ -23,6 +23,7 @@ services:
     environment:
       REDIS_HOST: redis 
       MYSQL_HOST: db
+      MYSQL_PASSWORD: rootpass
     networks:
     - vote-net
     depends_on:
@@ -36,6 +37,7 @@ services:
     - 3000:3000
     environment:
       MYSQL_HOST: db
+      MYSQL_PASSWORD: rootpass
     networks:
     - vote-net
     depends_on:
