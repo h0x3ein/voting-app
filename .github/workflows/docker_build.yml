@@ -43,6 +43,7 @@ jobs:
           load: true
           push: false
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:tmp
+          no-cache: true
           #cache-from: type=gha
           #cache-to: type=gha,mode=max
 
