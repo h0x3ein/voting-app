@@ -36,6 +36,6 @@ jobs:
           with:
             context: ./vote
             push: true
-            tag: |
+            tags: |
               ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
               ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
