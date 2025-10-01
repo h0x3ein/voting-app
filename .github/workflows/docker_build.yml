@@ -34,15 +34,16 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64
+          context: ${{ inputs.context }}
           load: true
           push: false
-          tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/newapp:tmp
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:tmp
 
       #  Vulnerability scan
       - name: Run Trivy Scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/newapp:tmp
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:tmp
           format: table
           exit-code: '1'
           ignore-unfixed: true
