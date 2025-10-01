@@ -43,6 +43,8 @@ jobs:
           load: true
           push: false
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:tmp
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       #  Vulnerability scan
       - name: Run Trivy Scanner
