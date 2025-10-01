@@ -67,6 +67,7 @@ jobs:
 
       - name: Build and push ${{ inputs.service }} Docker images
         uses: docker/build-push-action@v6.18.0
+        id: build-and-push
         with:
           context: ${{ inputs.context }}
           platforms: linux/amd64,linux/arm64
