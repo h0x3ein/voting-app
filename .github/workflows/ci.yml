@@ -44,6 +44,8 @@ jobs:
             context: ./vote
             platforms: linux/amd64,linux/arm64
             push: true
+            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
+            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
             tags: |
               ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
               ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
@@ -78,6 +80,8 @@ jobs:
           context: ./worker
           push: true
           platforms: linux/amd64,linux/arm64
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
@@ -112,6 +116,8 @@ jobs:
           context: ./result
           push: true
           platforms: linux/amd64,linux/arm64
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
