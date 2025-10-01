@@ -94,5 +94,5 @@ jobs:
       - name: Verify signature
         run: |
           cosign verify docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }} \
-            --certificate-identity=https://github.com/${{ github.repository }}/.github/workflows/docker_build.yml@refs/heads/main \
+            --certificate-identity="https://github.com/${{ github.repository }}/.github/workflows/docker_build.yml@${{ github.ref }}" \
             --certificate-oidc-issuer=https://token.actions.githubusercontent.com
