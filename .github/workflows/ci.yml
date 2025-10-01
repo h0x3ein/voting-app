@@ -16,7 +16,7 @@ jobs:
 
   vote:
       env:
-        IAMGE_NAME: rvote
+        IMAGE_NAME: rvote
       runs-on: ubuntu-latest
       steps:
         - name: checkout
@@ -47,12 +47,12 @@ jobs:
             cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
             cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
             tags: |
-              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
   worker:
     env:
-      IAMGE_NAME: rworker
+      IMAGE_NAME: rworker
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -83,12 +83,12 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
     
   result:
     env:
-      IAMGE_NAME: rresult
+      IMAGE_NAME: rresult
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -119,5 +119,5 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IAMGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
