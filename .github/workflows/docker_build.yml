@@ -35,7 +35,6 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: false
-          load: true
           tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/newapp:tmp
 
       #  Vulnerability scan
