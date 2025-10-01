@@ -15,6 +15,11 @@ on:
       
 jobs:
   voting-app:
+    
+    permissions:
+      contents: read
+      id-token: write    # for keyless Cosign signatures
+
     env:
       IMAGE_NAME: ${{ inputs.image }}
     runs-on: ubuntu-latest
