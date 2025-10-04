@@ -96,7 +96,7 @@ jobs:
       # Sign the pushed image
       - name: Sign with Cosign
         run: |
-          cosign sign --yes --keyless ${{ env.REGISTRY }}/${{ env.REPO }}@${{ steps.push.outputs.digest }}
+          cosign sign --yes  ${{ env.REGISTRY }}/${{ env.REPO }}@${{ steps.push.outputs.digest }}
 
       - name: Verify signature (issuer + identity regexp)
         run: |
