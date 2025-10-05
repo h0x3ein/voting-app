@@ -55,7 +55,7 @@ jobs:
 
       #  Vulnerability scan
       - name: Run Trivy Scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref:  ${{ env.REPO }}:scan-${{ github.sha }}
           format: table
@@ -88,6 +88,16 @@ jobs:
           tags: |
             ${{ env.REPO }}:git-${{ steps.get_version.outputs.SHA7 }}
             ${{ env.REPO }}:${{ github.sha }}
+      
+            
+      - name: Tag latest on main
+        if: steps.get_version.outputs.LATEST == 'true'
+        run: |
+          docker buildx imagetools create \
+            -t ${{ env.REPO }}:latest \
+            ${{ env.REPO }}@${{ steps.push.outputs.digest }}
+      
+      
       
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.10.0
