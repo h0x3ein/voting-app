@@ -15,7 +15,7 @@
     "mysql2": "^3.6.3",
     "socket.io": "^4.7.4",
     "prom-client": "^15.0.0",
-    "winston": "^3.11.0"
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
