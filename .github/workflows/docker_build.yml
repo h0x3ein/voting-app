@@ -49,9 +49,7 @@ jobs:
           load: true
           push: false
           tags: ${{ env.REPO }}:scan-${{ github.sha }}
-          cache-from: type=registry,ref=${{ env.REPO }}:buildcache
-          cache-to: type=registry,ref=${{ env.REPO }}:buildcache,mode=max
-        
+          no-cache: true
 
       #  Vulnerability scan
       - name: Run Trivy Scanner
@@ -89,7 +87,7 @@ jobs:
             ${{ env.REPO }}:git-${{ steps.get_version.outputs.SHA7 }}
             ${{ env.REPO }}:${{ github.sha }}
       
-            
+
       - name: Tag latest on main
         if: steps.get_version.outputs.LATEST == 'true'
         run: |
