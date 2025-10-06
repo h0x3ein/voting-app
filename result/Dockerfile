@@ -1,30 +1,22 @@
 # syntax=docker/dockerfile:1.7
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
+ENV NODE_ENV=production
 WORKDIR /app
 
-# Copy package files
+# 1) Install prod deps deterministically
 COPY package*.json ./
+RUN npm ci 
 
-# Install all dependencies (prod + dev)
-RUN npm ci
-
-# Copy source files
+# 2) Copy the rest of the app
 COPY . .
 
-# ========== Production stage ==========
-FROM node:20-alpine AS prod
-
-WORKDIR /app
-
-# Copy only production dependencies
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copy source files
-COPY . .
-
+# 3) Run as non-root (the 'node' user exists in this image)
 USER node
+
 EXPOSE 5000
+# Optional healthcheck if you expose /healthz
+# HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+#   CMD wget -qO- http://127.0.0.1:5000/healthz || exit 1
 
 CMD ["npm", "start"]
