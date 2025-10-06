@@ -1,4 +1,4 @@
-name: run CI for voting app
+name: run CI for voting app.
 
 on:
     pull_request: 
