@@ -70,7 +70,7 @@ jobs:
       - name: Run Trivy Scanner
         uses: aquasecurity/trivy-action@0.33.1
         with:
-          image-ref: ${{ env.REPO }}:scan-${{ github.sha }}
+          image-ref: ${{ inputs.image }}:scan-${{ github.sha }}
           format: table
           exit-code: '1'
           ignore-unfixed: true
