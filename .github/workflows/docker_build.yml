@@ -12,7 +12,7 @@ on:
         type: string
 
 jobs:
-  voting-app:
+  build-apps:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,84 +39,41 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Get the tag name
-        id: get_version
+      - name: Compute tag
+        id: get_tag
         run: |
-          echo "SHA7=git-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "LATEST=true" >> $GITHUB_OUTPUT
-          else
-            echo "LATEST=false" >> $GITHUB_OUTPUT
-          fi
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
-      ##################################################################
-      # 1) Build single-arch (amd64) image for scanning
-      ##################################################################
-      - name: Build amd64 image for scan
-        uses: docker/build-push-action@v4
-        with:
-          context: ${{ inputs.context }}
-          platforms: linux/amd64
-          tags: ${{ inputs.image }}:scan-${{ github.sha }}
-          load: true
-          push: false
-          no-cache: true
-          build-args: |
-            INSTALL_DEV_DEPS=true   # only if Dockerfile supports ARG
-
-      ##################################################################
-      # 2) Run Trivy scan on the built image
-      ##################################################################
-      - name: Run Trivy Scanner
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          image-ref: ${{ inputs.image }}:scan-${{ github.sha }}
-          format: table
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-      ##################################################################
-      # 3) Build and push MULTI-ARCH image (only if scan passes)
-      ##################################################################
+      
       - name: Build & push multi-arch image
-        if: success()
-        uses: docker/build-push-action@v6.18.0
-        id: push
-        with:
+        uses: docker/build-push-action@v6
+        id: build
+        with: 
           context: ${{ inputs.context }}
           platforms: linux/amd64,linux/arm64
           push: true
+          tags: ${{ env.REPO }}:${{ steps.get_tag.outputs.SHORT_SHA }}
           cache-from: type=registry,ref=${{ env.REPO }}:buildcache
           cache-to: type=registry,ref=${{ env.REPO }}:buildcache,mode=max
-          tags: |
-            ${{ env.REPO }}:git-${{ steps.get_version.outputs.SHA7 }}
-            ${{ env.REPO }}:${{ github.sha }}
+    
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.REPO }}@${{ steps.build.outputs.digest }}
+          format: table
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 1
 
-      - name: Tag latest on main
-        if: ${{ success() && steps.get_version.outputs.LATEST == 'true' }}
-        run: |
-          docker buildx imagetools create \
-            -t ${{ env.REPO }}:latest \
-            ${{ env.REPO }}@${{ steps.push.outputs.digest }}
-
-      ##################################################################
-      # 4) Sign & verify with Cosign
-      ##################################################################
+      
+      
       - name: Install Cosign
-        if: success()
-        uses: sigstore/cosign-installer@v3.10.0
+        uses: sigstore/cosign-installer@v3
 
       - name: Sign with Cosign
-        if: success()
         run: |
-          cosign sign --yes  ${{ env.REGISTRY }}/${{ env.REPO }}@${{ steps.push.outputs.digest }}
-
-      - name: Verify signature
-        if: success()
-        run: |
-          cosign verify ${{ env.REGISTRY }}/${{ env.REPO }}@${{ steps.push.outputs.digest }} \
-            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            --certificate-identity-regexp "https://github.com/${{ github.repository }}/\.github/workflows/docker_build\.yml@.*" \
-            --output text
+           DIGEST="${{ steps.build.outputs.digest }}"
+           echo "Signing ${{ env.REPO }}@${DIGEST}"
+           cosign sign --yes "${{ env.REPO }}@${DIGEST}"
