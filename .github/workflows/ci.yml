@@ -1,0 +1,41 @@
+name: run CI for voting app.
+
+on:
+    pull_request: 
+    push: 
+      branches:
+      - main
+      - feat/add-ci-cd
+    workflow_dispatch: 
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  voting-app:
+    
+    permissions:
+      contents: read
+      id-token: write    # for keyless Cosign signatures
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - service: vote
+          image: rvote
+          context: ./vote
+        - service: worker
+          image: rworker
+          context: ./worker
+        - service: result
+          image: rresult
+          context: ./result
+    uses: ./.github/workflows/docker_build.yml
+    with:
+      service: ${{ matrix.service }}
+      image: ${{ matrix.image }}
+      context: ${{ matrix.context }}
+    secrets: inherit
