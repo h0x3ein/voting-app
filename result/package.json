@@ -25,6 +25,9 @@
     "supertest": "^6.3.3",
     "testcontainers": "^10.2.1"
   },
+  "overrides": {
+    "cross-spawn": "^7.0.6"
+  },
   "author": "",
   "license": "ISC"
 }
