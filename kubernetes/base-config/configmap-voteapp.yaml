@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap 
+metadata:
+  name: voteapp-config
+  namespace: vote-app
+data:
+  MYSQL_HOST: db
+  MYSQL_DATABASE: voting
+  REDIS_HOST: redis
