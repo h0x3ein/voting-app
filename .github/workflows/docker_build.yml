@@ -54,8 +54,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ env.REPO }}:${{ steps.get_tag.outputs.SHORT_SHA }}
-          #cache-from: type=registry,ref=${{ env.REPO }}:buildcache
-          #cache-to: type=registry,ref=${{ env.REPO }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REPO }}:buildcache
+          cache-to: type=registry,ref=${{ env.REPO }}:buildcache,mode=max
     
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@0.24.0

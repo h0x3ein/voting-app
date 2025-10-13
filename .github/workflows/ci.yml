@@ -25,13 +25,13 @@ jobs:
       matrix:
         include:
         - service: vote
-          image: vote-rmin
+          image: rvote
           context: ./vote
         - service: worker
-          image: worker-rmin
+          image: rworker
           context: ./worker
         - service: result
-          image: result-rmin
+          image: rresult
           context: ./result
     uses: ./.github/workflows/docker_build.yml
     with:
