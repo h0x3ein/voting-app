@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1.7
-FROM node:20.16-alpine3.19
+FROM node:22-alpine
 
 ENV NODE_ENV=production
 WORKDIR /app
 
 # 1) Install prod deps deterministically
 COPY package*.json ./
-RUN npm ci --omit=dev
+#RUN npm ci --omit=dev 
+RUN npm ci --omit=dev && npm prune --omit=dev
 
 # 2) Copy the rest of the app
 COPY . .

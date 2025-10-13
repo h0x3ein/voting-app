@@ -1,0 +1,79 @@
+on:
+  workflow_call:
+    inputs:
+      service:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+      context:
+        required: true
+        type: string
+
+jobs:
+  build-apps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      IMAGE_NAME: ${{ inputs.image }}
+      REGISTRY: docker.io
+      REPO: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.6.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.11.1
+
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Compute tag
+        id: get_tag
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+
+      
+      - name: Build & push multi-arch image
+        uses: docker/build-push-action@v6
+        id: build
+        with: 
+          context: ${{ inputs.context }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REPO }}:${{ steps.get_tag.outputs.SHORT_SHA }}
+          cache-from: type=registry,ref=${{ env.REPO }}:buildcache
+          cache-to: type=registry,ref=${{ env.REPO }}:buildcache,mode=max
+    
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.REPO }}@${{ steps.build.outputs.digest }}
+          format: table
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          exit-code: 1
+
+      
+      
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign with Cosign
+        run: |
+           DIGEST="${{ steps.build.outputs.digest }}"
+           echo "Signing ${{ env.REPO }}@${DIGEST}"
+           cosign sign --yes "${{ env.REPO }}@${DIGEST}"
