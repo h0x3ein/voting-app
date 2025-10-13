@@ -7,3 +7,4 @@ data:
   MYSQL_HOST: db
   MYSQL_DATABASE: voting
   REDIS_HOST: redis
+  REDIS_PORT: '6379'

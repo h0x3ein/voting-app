@@ -18,29 +18,13 @@ spec:
           image: mysql:8.0
           ports:
             - containerPort: 3306
-          env:
-            # Root password (your app images use rootpass in Compose)
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: voteapp-secrets
-                  key: MYSQL_ROOT_PASSWORD
-            # Create initial DB and an app user (optional; mirrors your Compose)
-            - name: MYSQL_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: voteapp-config
-                  key: MYSQL_DATABASE
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: voteapp-secrets
-                  key: MYSQL_USER
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: voteapp-secrets
-                  key: MYSQL_APP_USER_PASSWORD
+          
+          envFrom:
+          - configMapRef:
+              name: voteapp-config
+          - secretRef:
+              name: voteapp-secret
+
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql

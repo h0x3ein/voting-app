@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
         - name: vote
-          image: h0x3ein/rvote:0.1
+          image: h0x3ein/rvote:2e16ed1
           envFrom:
             - configMapRef:
                 name: voteapp-config
             - secretRef:
-                name: voteapp-secrets
+                name: voteapp-secret

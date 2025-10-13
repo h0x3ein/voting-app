@@ -20,4 +20,4 @@ spec:
           - configMapRef:
               name: voteapp-config
           -  secretRef:
-                name: voteapp-secrets
+                name: voteapp-secret
