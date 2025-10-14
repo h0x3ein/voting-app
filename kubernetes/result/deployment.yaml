@@ -14,10 +14,17 @@ spec:
         app: result
     spec:
       containers:
-        - name: result
-          image: h0x3ein/rresult:2e16ed1
-          envFrom:
-          - configMapRef:
-              name: voteapp-config
-          -  secretRef:
-                name: voteapp-secret
+      - name: result
+        image: h0x3ein/rresult:2e16ed1
+        envFrom:
+        - configMapRef:
+            name: voteapp-config
+        -  secretRef:
+              name: voteapp-secret
+        resources:
+          requests:
+            cpu: "100m"        
+            memory: "64Mi"   
+          limits:
+            cpu: "200m"       
+            memory: "128Mi" 

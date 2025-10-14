@@ -14,20 +14,25 @@ spec:
         app: db
     spec:
       containers:
-        - name: mysql
-          image: mysql:8.0
-          ports:
-            - containerPort: 3306
-          
-          envFrom:
-          - configMapRef:
-              name: voteapp-config
-          - secretRef:
-              name: voteapp-secret
-
-          volumeMounts:
-            - name: mysql-storage
-              mountPath: /var/lib/mysql
+      - name: mysql
+        image: mysql:8.0
+        ports:
+          - containerPort: 3306
+        envFrom:
+        - configMapRef:
+            name: voteapp-config
+        - secretRef:
+            name: voteapp-secret
+        resources:
+          requests:
+            cpu: "300m"        
+            memory: "512Mi"   
+          limits:
+            cpu: "1"       
+            memory: "1Gi" 
+        volumeMounts:
+          - name: mysql-storage
+            mountPath: /var/lib/mysql
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
