@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: worker-egress-redis
+  namespace: vote-app
+spec:
+  podSelector:
+    matchLabels:
+      app: worker
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 172.17.0.1/32
+    ports:
+    - protocol: TCP
+      port: 6379
