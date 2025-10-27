@@ -9,6 +9,7 @@ spec:
       app: worker
   policyTypes:
   - Egress
+  - Ingress
   egress:
   - to:
       - podSelector:
@@ -24,3 +25,11 @@ spec:
     ports:
       - protocol: TCP
         port: 3306
+  ingress:
+  - from:
+      - podSelector:
+          matchLabels:
+            app: redis
+    ports:
+      - protocol: TCP
+        port: 8080

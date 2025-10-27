@@ -22,7 +22,7 @@ spec:
         -  secretRef:
               name: voteapp-secret
         resources:
-          requests:
+          requests: #guranteed 
             cpu: "100m"        
             memory: "64Mi"   
           limits:
