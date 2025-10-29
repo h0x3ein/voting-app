@@ -4,7 +4,7 @@ metadata:
   name: voteapp-config
   namespace: vote-app
 data:
-  MYSQL_HOST: db
+  MYSQL_HOST: mysql-proxy
   MYSQL_DATABASE: voting
   REDIS_HOST: redis
   REDIS_PORT: '6379'

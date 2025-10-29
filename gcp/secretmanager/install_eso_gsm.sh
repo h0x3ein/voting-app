@@ -5,10 +5,20 @@ set -euo pipefail
 # ⚙️ Configuration
 # ================================
 PROJECT_ID=${PROJECT_ID:-""}
+LAB_REGION=${LAB_REGION:-""}
+LAB_ZONE=${LAB_ZONE:-""}
 
-if [[ -z "$PROJECT_ID" ]]; then
-  echo "❌ PROJECT_ID is not set. Please export it before running."
-  echo "Example: export PROJECT_ID=my-gcp-project"
+# ================================
+# 🧭 Pre-flight checks
+# ================================
+if [[ -z "$PROJECT_ID" || -z "$LAB_REGION" || -z "$LAB_ZONE" ]]; then
+  echo "❌ Missing required environment variables."
+  echo "Please export them before running this script."
+  echo ""
+  echo "Example:"
+  echo "  export PROJECT_ID=my-gcp-project"
+  echo "  export LAB_REGION=us-central1"
+  echo "  export LAB_ZONE=us-central1-a"
   exit 1
 fi
 
@@ -24,6 +34,8 @@ K8S_EXTERNALSECRET="mysql-credentials"
 echo "🔐 Setting up Google Secret Manager and Service Account..."
 
 gcloud config set project "$PROJECT_ID"
+gcloud config set compute/region "$LAB_REGION"
+gcloud config set compute/zone "$LAB_ZONE"
 
 # Enable APIs
 gcloud services enable secretmanager.googleapis.com --quiet
@@ -63,10 +75,8 @@ echo "✅ GCP setup complete."
 # ================================
 echo "☸️ Setting up Kubernetes resources..."
 
-# Create namespace
 kubectl create namespace "$K8S_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
-# Install External Secrets Operator
 if ! helm status external-secrets -n "$K8S_NAMESPACE" >/dev/null 2>&1; then
   helm repo add external-secrets https://charts.external-secrets.io
   helm repo update
@@ -75,11 +85,9 @@ else
   echo "ℹ️ ESO already installed, skipping Helm install."
 fi
 
-# Wait for ESO pods
 echo "⏳ Waiting for ESO pods to be ready..."
 kubectl wait --for=condition=Available deployment -l app.kubernetes.io/name=external-secrets -n "$K8S_NAMESPACE" --timeout=180s || true
 
-# Create GCP credentials secret
 kubectl delete secret "$K8S_SECRET" --ignore-not-found
 kubectl create secret generic "$K8S_SECRET" \
   --from-file=credentials.json=key.json
@@ -90,13 +98,11 @@ kubectl create secret generic "$K8S_SECRET" \
 echo "🧩 Creating SecretStore..."
 envsubst < gcp-secret-store.yaml | kubectl apply -f -
 
-
 # ================================
 # 🧱 Step 4: ExternalSecret
 # ================================
 echo "🧱 Creating ExternalSecret for MySQL credentials..."
 kubectl apply -f mysql-credentials.yaml
-
 
 # ================================
 # ✅ Done
