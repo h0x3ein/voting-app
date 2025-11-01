@@ -1,0 +1,15 @@
+# gcp/terraform/.gitignore
+
+# Local state
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive vars
+terraform.tfvars
+*.auto.tfvars
+*.json  # service account keys
+
+# OS files
+.DS_Store
