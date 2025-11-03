@@ -9,4 +9,8 @@ variable "project_id" {
   type        = string
 }
 
-
+variable "network_name" {
+  description = "The Name of networkName of the VPC network to create or use"
+  type        = string
+  default     = "vote-app-vpc"
+}

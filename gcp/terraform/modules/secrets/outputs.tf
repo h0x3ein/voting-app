@@ -1,3 +1,7 @@
+###############################################
+# 📤 Outputs
+###############################################
+
 output "secret_names" {
   description = "The names of the created secrets."
   value = [
@@ -6,3 +10,4 @@ output "secret_names" {
     google_secret_manager_secret.mysql_user.secret_id,
   ]
 }
+

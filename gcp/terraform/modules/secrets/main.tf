@@ -1,39 +1,46 @@
-# Enable Secret Manager API (safe to run if already enabled)
-resource "google_project_service" "secretmanager_api" {
-  project = var.project_id
-  service = "secretmanager.googleapis.com"
-}
-
-# Create three secrets (static list for simplicity)
+# 1️⃣ Create Secret Containers
 resource "google_secret_manager_secret" "mysql_password" {
   project   = var.project_id
-  secret_id = "mysql-password"
+  secret_id = "MYSQL_PASSWORD"
 
   replication {
     auto {}
   }
 
-  depends_on = [google_project_service.secretmanager_api]
 }
 
 resource "google_secret_manager_secret" "mysql_root_password" {
   project   = var.project_id
-  secret_id = "mysql-root-password"
+  secret_id = "MYSQL_ROOT_PASSWORD"
 
   replication {
     auto {}
   }
 
-  depends_on = [google_project_service.secretmanager_api]
 }
 
 resource "google_secret_manager_secret" "mysql_user" {
   project   = var.project_id
-  secret_id = "mysql-user"
+  secret_id = "MYSQL_USER"
 
   replication {
     auto {}
   }
 
-  depends_on = [google_project_service.secretmanager_api]
+}
+
+# 2️⃣ Add Secret Values (Versions)
+resource "google_secret_manager_secret_version" "mysql_password_version" {
+  secret      = google_secret_manager_secret.mysql_password.id
+  secret_data = var.mysql_password_value
+}
+
+resource "google_secret_manager_secret_version" "mysql_root_password_version" {
+  secret      = google_secret_manager_secret.mysql_root_password.id
+  secret_data = var.mysql_root_password_value
+}
+
+resource "google_secret_manager_secret_version" "mysql_user_version" {
+  secret      = google_secret_manager_secret.mysql_user.id
+  secret_data = var.mysql_user_value
 }

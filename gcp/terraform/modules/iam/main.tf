@@ -11,3 +11,8 @@ resource "google_project_iam_member" "eso_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${google_service_account.eso_sa.email}"
 }
+
+resource "google_service_account_key" "eso_key" {
+  service_account_id = google_service_account.eso_sa.name
+}
+
