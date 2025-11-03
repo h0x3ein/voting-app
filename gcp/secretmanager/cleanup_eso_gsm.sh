@@ -6,11 +6,11 @@ set -euo pipefail
 # ================================
 PROJECT_ID=${PROJECT_ID:-""}
 
-if [[ -z "$PROJECT_ID" ]]; then
-  echo "❌ PROJECT_ID is not set. Please export PROJECT_ID before running this script."
-  echo "Example: export PROJECT_ID=my-gcp-project"
-  exit 1
-fi
+#if [[ -z "$PROJECT_ID" ]]; then
+#  echo "❌ PROJECT_ID is not set. Please export PROJECT_ID before running this script."
+#  echo "Example: export PROJECT_ID=my-gcp-project"
+#  exit 1
+#fi
 
 
 
