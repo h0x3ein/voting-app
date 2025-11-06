@@ -13,7 +13,9 @@ resource "google_redis_instance" "redis" {
   connect_mode = "PRIVATE_SERVICE_ACCESS"
 
   # Optional configuration
-  transit_encryption_mode = "SERVER_AUTHENTICATION"
+  #transit_encryption_mode = "SERVER_AUTHENTICATION"
+  transit_encryption_mode = "DISABLED"
+
 
   # Optional maintenance window
   maintenance_policy {

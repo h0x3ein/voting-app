@@ -10,7 +10,6 @@ variable "project_id" {
 variable "region" {
   description = "Region where the Cloud SQL instance will be created."
   type        = string
-  default     = "us-central1"
 }
 
 variable "network_self_link" {

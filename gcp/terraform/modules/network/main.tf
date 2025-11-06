@@ -8,50 +8,31 @@ resource "google_compute_network" "vpc" {
 }
 
 ###############################################
-# 🔌 Private Service Access (PSA) Ranges
+# 🔌 Private Service Access (PSA)
 ###############################################
-
-# Reserved IP range for Redis
-resource "google_compute_global_address" "redis_private_ip_range" {
-  name          = "google-managed-services-range-redis"
+# Google best practice: single shared range for all managed services (Cloud SQL, Redis, etc.)
+resource "google_compute_global_address" "google_managed_services_range" {
+  name          = "google-managed-services-range"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 24
-  address       = "10.0.0.0"  # Redis range
+  address       = "10.0.0.0"
   network       = google_compute_network.vpc.self_link
   project       = var.project_id
 }
 
-# Reserved IP range for Cloud SQL
-resource "google_compute_global_address" "cloudsql_private_ip_range" {
-  name          = "google-managed-services-range-cloudsql"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 24
-  address       = "10.0.1.0"  # Cloud SQL range (different block)
-  network       = google_compute_network.vpc.self_link
-  project       = var.project_id
-}
-
-###############################################
-# 🧩 Private Service Networking Connections
-###############################################
-# Connect both ranges to Google services
 resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.vpc.self_link
   service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [
-    google_compute_global_address.redis_private_ip_range.name,
-    google_compute_global_address.cloudsql_private_ip_range.name
-  ]
+  reserved_peering_ranges = [google_compute_global_address.google_managed_services_range.name]
+
   depends_on = [
-    google_compute_global_address.redis_private_ip_range,
-    google_compute_global_address.cloudsql_private_ip_range
+    google_compute_global_address.google_managed_services_range
   ]
 }
 
 ###############################################
-# 🌐 Cloud Router + NAT
+# 🌐 Cloud Router + NAT (for outbound internet)
 ###############################################
 resource "google_compute_router" "router" {
   name    = "default-router"
@@ -69,9 +50,12 @@ resource "google_compute_router_nat" "nat" {
   project                            = var.project_id
 }
 
+
 ###############################################
-# 🔥 Firewall Rule (for Redis Proxy)
+# 🔥 Firewall Rules
 ###############################################
+
+# Allow Redis access (TCP 6379) — optional if only internal access is needed
 resource "google_compute_firewall" "allow_redis" {
   name    = "allow-redis-proxy-6379"
   network = google_compute_network.vpc.name
@@ -82,7 +66,25 @@ resource "google_compute_firewall" "allow_redis" {
     ports    = ["6379"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["redis-proxy"]
   direction     = "INGRESS"
+  source_ranges = ["0.0.0.0/0"] # for demo; narrow to specific range for prod
+  target_tags   = ["redis-proxy"]
+  priority      = 1000
+}
+
+# Allow SSH via IAP (no public IP required)
+resource "google_compute_firewall" "allow_iap_ssh" {
+  name    = "allow-iap-ssh"
+  network = google_compute_network.vpc.name
+  project = var.project_id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  direction     = "INGRESS"
+  source_ranges = ["35.235.240.0/20"] # IAP tunnel IP range
+  target_tags   = ["redis-proxy"]
+  priority      = 1000
 }

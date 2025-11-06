@@ -9,7 +9,7 @@ variable "name" {
 }
 
 variable "zone" {
-  description = "GCP zone where the VM will be created"
+  description = "Zone where the VM will be created"
   type        = string
 }
 
@@ -20,42 +20,28 @@ variable "machine_type" {
 }
 
 variable "image" {
-  description = "Image for the VM (e.g., debian-cloud/debian-12)"
+  description = "Boot image (e.g., debian-cloud/debian-12)"
   type        = string
   default     = "debian-cloud/debian-12"
 }
 
 variable "network" {
-  description = "VPC network name or self_link"
+  description = "Self-link of the VPC network"
   type        = string
-}
-
-variable "subnetwork" {
-  description = "Subnetwork name (optional)"
-  type        = string
-  default     = null
-}
-
-variable "assign_public_ip" {
-  description = "If true, the VM will get a public IP address"
-  type        = bool
-  default     = false
 }
 
 variable "tags" {
-  description = "Network tags to apply (for firewall rules)"
+  description = "Additional network tags for the VM"
   type        = list(string)
   default     = []
 }
 
 variable "startup_script" {
-  description = "Optional startup script for installing software"
+  description = "Startup script for installing software"
   type        = string
-  default     = ""
+  default     = <<-EOT
+    #!/bin/bash
+    sudo apt-get update -y
+    sudo apt-get install -y redis-tools
+  EOT
 }
-
-#variable "service_account_email" {
-#  description = "Service account email to attach to the VM"
-#  type        = string
-#  default     = "default"
-#}
