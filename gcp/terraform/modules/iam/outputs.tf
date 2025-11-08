@@ -8,3 +8,15 @@ output "eso_private_key" {
   value       = google_service_account_key.eso_key.private_key
   sensitive   = true
 }
+
+
+output "cloudsql_proxy_sa_email" {
+  description = "The email address of the Cloud SQL Proxy service account."
+  value       = google_service_account.cloudsql_proxy_sa.email
+}
+
+output "cloudsql_proxy_key" {
+  description = "The private key of the Cloud SQL Proxy service account."
+  value       = google_service_account_key.cloudsql_proxy_key.private_key
+  sensitive   = true
+}

@@ -12,10 +12,6 @@ output "private_ip_address" {
   value       = google_sql_database_instance.mysql_instance.private_ip_address
 }
 
-output "proxy_sa_email" {
-  description = "Email address of the Cloud SQL Proxy service account."
-  value       = google_service_account.proxy_sa.email
-}
 
 output "db_instance_name" {
   description = "Name of the Cloud SQL instance."

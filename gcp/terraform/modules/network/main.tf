@@ -15,8 +15,8 @@ resource "google_compute_global_address" "google_managed_services_range" {
   name          = "google-managed-services-range"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  prefix_length = 24
-  address       = "10.0.0.0"
+  prefix_length = 20
+  address       = "10.50.0.0"
   network       = google_compute_network.vpc.self_link
   project       = var.project_id
 }

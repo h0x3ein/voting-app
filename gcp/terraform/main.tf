@@ -20,26 +20,6 @@ module "secrets" {
 }
 
 
-#module "network" {
-#  source     = "./modules/network"
-#  project_id = var.project_id
-#  region     = var.region
-#  depends_on = [module.api]
-#}
-#
-#module "proxy_vm" {
-#  source = "./modules/vm"
-#
-#  project_id       = var.project_id
-#  name             = "redis-proxy"
-#  zone             = var.zone
-#  network          = module.network.network_self_link
-#  machine_type     = "e2-micro"
-#  assign_public_ip = false
-#  tags             = ["redis-proxy"]
-#  depends_on = [ module.network ]
-#}
-
 module "network" {
   source      = "./modules/network"
   project_id  = var.project_id
@@ -53,6 +33,7 @@ module "vm" {
   name         = "redis-proxy"
   zone         = var.zone
   network      = module.network.network_self_link
+  depends_on       = [module.network]
 }
 
 module "redis" {
@@ -66,15 +47,16 @@ module "redis" {
 }
 
 
-#module "cloudsql" {
-#  source            = "./modules/cloudsql"
-#  project_id        = var.project_id
-#  region            = var.region
-#  network_self_link = module.network.network_self_link
-#  db_instance_name  = var.db_instance_name
-#  db_name           = var.db_name
-#  db_user           = var.mysql_user_value
-#  db_pass           = var.mysql_password_value
-#  proxy_sa_name     = var.proxy_sa_name
-# # key_rotation_id   = var.key_rotation_id
-#}
+module "cloudsql" {
+  source            = "./modules/cloudsql"
+  project_id        = var.project_id
+  region            = var.region
+  network_self_link = module.network.network_self_link
+  db_instance_name  = var.db_instance_name
+  db_name           = var.db_name
+  db_user           = var.mysql_user_value
+  db_pass           = var.mysql_password_value
+  proxy_sa_name     = var.proxy_sa_name
+ # key_rotation_id   = var.key_rotation_id
+  depends_on       = [module.network]
+}
