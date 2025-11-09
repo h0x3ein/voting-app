@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Endpoints
 metadata:
-  name: redis # MUST match the Service name
+  name: redis
   namespace: vote-app
 subsets:
   - addresses:
-      - ip: 172.17.0.1 # Use the Public/External IP of your redis-proxy VM
+      - ip: 172.17.0.1
     ports:
       - port: 6379

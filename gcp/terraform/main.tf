@@ -42,7 +42,6 @@ module "redis" {
   region           = var.region
   redis_name       = "my-redis"
   network_self_link = module.network.network_self_link
-  environment      = "dev"
   depends_on       = [module.network]
 }
 
