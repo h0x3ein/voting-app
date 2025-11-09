@@ -1,6 +1,9 @@
 locals {
   api=[
-    "secretmanager.googleapis.com"
+    "secretmanager.googleapis.com",
+    "redis.googleapis.com",
+    "compute.googleapis.com",
+    "servicenetworking.googleapis.com",
   ]
 }
 

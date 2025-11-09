@@ -9,6 +9,11 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "Zone where the VM will be created"
+  type        = string
+}
+
 variable "mysql_root_password" {
   description = "Root password for MySQL"
   type        = string
