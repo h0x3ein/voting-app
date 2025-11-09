@@ -9,3 +9,9 @@ variable "service_account_name" {
   type        = string
   default     = "eso-sa"
 }
+
+variable "proxy_sa_name" {
+  description = "The service account name for the Cloud SQL Proxy"
+  type        = string
+  default     = "cloudsql-proxy"
+}

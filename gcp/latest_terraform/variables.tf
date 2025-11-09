@@ -28,3 +28,20 @@ variable "mysql_user" {
   description = "MySQL username"
   type        = string
 }
+
+variable "db_name" {
+  description = "Database name inside the SQL instance."
+  type        = string
+}
+
+variable "proxy_sa_name" {
+  description = "Service Account name for the Cloud SQL Proxy."
+  type        = string
+}
+
+
+variable "db_instance_name" {
+  description = "Cloud SQL instance name."
+  type        = string
+  default     = "voteapp-sql"
+}

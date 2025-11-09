@@ -4,6 +4,8 @@ locals {
     "redis.googleapis.com",
     "compute.googleapis.com",
     "servicenetworking.googleapis.com",
+    "sqladmin.googleapis.com",
+
   ]
 }
 
