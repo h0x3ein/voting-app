@@ -44,7 +44,7 @@ export PROXY_YAML_PATH="./cloudsql-proxy.yaml"
 
 # Continue with the rest of the script...
 # Fetch the Cloud SQL Proxy key from Terraform output and decode it to the key.json file
-(cd ../terraform && terraform output -raw cloudsql_proxy_key) | base64 --decode > ./cloudsql-proxy-key.json
+(cd ../latest_terraform && terraform output -raw cloudsql_proxy_key) | base64 --decode > ./cloudsql-proxy-key.json
 
 # ==============================
 # 🚀 Update Kubernetes Secret with the new key

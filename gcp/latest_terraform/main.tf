@@ -37,13 +37,12 @@ module "redis" {
 }
 
 module "cloudsql" {
-  source           = "./modules/cloudsql"
+  source           = "./modules/cloud_sql"
   vote_vpc         = module.network.vote_vpc
   db_instance_name = var.db_instance_name
   db_name          = var.db_name
-  db_user          = var.mysql_user_value
-  db_pass          = var.mysql_password_value
-  proxy_sa_name    = var.proxy_sa_name
+  db_user          = var.mysql_user
+  db_pass          = var.mysql_password
   depends_on       = [module.api, module.iam, module.network]
 
 }

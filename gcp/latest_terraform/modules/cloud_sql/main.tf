@@ -7,7 +7,7 @@ resource "google_sql_database_instance" "mysql_instance" {
     tier = var.db_tier
 
     ip_configuration {
-      ipv4_enabled    = false               
+      ipv4_enabled    = true               
       private_network = var.vote_vpc
     }
 

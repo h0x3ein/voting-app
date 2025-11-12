@@ -24,7 +24,7 @@ echo "✅ Old resources removed."
 echo "🔑 Exporting ESO service account key from Terraform..."
 
 # Go into Terraform directory to read output, store key locally in secretmanager/
-(cd ../terraform && terraform output -raw eso_private_key) | base64 --decode > ./key.json
+(cd ../latest_terraform && terraform output -raw eso_key) | base64 --decode > ./key.json
 
 if [[ ! -s ./key.json ]]; then
   echo "❌ Failed to extract key from Terraform output. Exiting."
@@ -43,7 +43,6 @@ kubectl -n "$K8S_NAMESPACE" create secret generic gcp-credentials \
 # ☁️ 4. Apply SecretStore (connects K8s → GCP Secret Manager)
 ##########################################
 echo "☁️ Applying SecretStore configuration..."
-export PROJECT_ID="qwiklabs-gcp-04-8ddc9823819a"
 envsubst < gcp-secret-store.yaml | kubectl -n "$K8S_NAMESPACE" apply -f -
 
 ##########################################

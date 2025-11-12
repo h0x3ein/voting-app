@@ -1,8 +1,3 @@
-variable "network_self_link" {
-  description = "The self-link of the VPC network for private connection."
-  type        = string
-}
-
 variable "vote_vpc" {
   description = "The name of the Cloud SQL instance."
   type        = string
