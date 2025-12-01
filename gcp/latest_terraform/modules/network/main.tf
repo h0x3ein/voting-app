@@ -1,5 +1,5 @@
 resource "google_compute_network" "vpc" {
-  name                    = var.vote_network_name
+  name = var.vote_network_name
 }
 
 # 🔌 Private Service Access (PSA)
@@ -19,7 +19,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.google_managed_services_range.name]
   depends_on = [
-      google_compute_global_address.google_managed_services_range
+    google_compute_global_address.google_managed_services_range
   ]
 }
 
@@ -39,14 +39,14 @@ resource "google_compute_router_nat" "nat" {
 
 # 🔥 Firewall Rules
 resource "google_compute_firewall" "allow_redis" {
-  name = "allow-redis-proxy-6379"
+  name    = "allow-redis-proxy-6379"
   network = google_compute_network.vpc.id
   allow {
     protocol = "tcp"
-    ports = [ "6379" ]
+    ports    = ["6379"]
   }
-  source_ranges = [ "0.0.0.0/24" ]
-  target_tags = ["redis-proxy"]
+  source_ranges = ["0.0.0.0/24"]
+  target_tags   = ["redis-proxy"]
 }
 
 resource "google_compute_firewall" "allow_iap_ssh" {
