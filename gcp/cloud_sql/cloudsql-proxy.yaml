@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudsql-proxy
+  namespace: vote-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudsql-proxy
+  template:
+    metadata:
+      labels:
+        app: cloudsql-proxy
+    spec:
+      containers:
+      - name: cloudsql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
+        args:
+          - "--address=0.0.0.0"
+          - "--port=3306"
+          - "--credentials-file=/secrets/key.json"
+          - "${PROJECT_ID}:${LAB_REGION}:${DB_INSTANCE_NAME}"
+        volumeMounts:
+        - name: sa-key
+          mountPath: /secrets
+          readOnly: true
+        ports:
+        - containerPort: 3306
+      volumes:
+      - name: sa-key
+        secret:
+          secretName: cloudsql-sa-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-proxy
+  namespace: vote-app
+spec:
+  selector:
+    app: cloudsql-proxy
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+

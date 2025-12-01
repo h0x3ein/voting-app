@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: vote-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker 
+    spec: 
+      containers:
+      - name: worker
+        image: h0x3ein/rworker:2e16ed1
+        envFrom:
+        - configMapRef:
+            name: voteapp-config
+        - secretRef:
+            name: voteapp-secret
+        resources:
+          requests:
+            cpu: "200m"        
+            memory: "128Mi"   
+          limits:
+            cpu: "400m"       
+            memory: "256Mi" 
+        livenessProbe:
+          httpGet:
+            path: /health    
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3

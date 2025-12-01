@@ -1,0 +1,22 @@
+output "eso_sa_email" {
+  description = "The email address of the ESO service account."
+  value       = google_service_account.eso_sa.email
+}
+
+output "eso_private_key" {
+  description = "The base64-encoded private key for the ESO service account."
+  value       = google_service_account_key.eso_key.private_key
+  sensitive   = true
+}
+
+
+output "cloudsql_proxy_sa_email" {
+  description = "The email address of the Cloud SQL Proxy service account."
+  value       = google_service_account.cloudsql_proxy_sa.email
+}
+
+output "cloudsql_proxy_key" {
+  description = "The private key of the Cloud SQL Proxy service account."
+  value       = google_service_account_key.cloudsql_proxy_key.private_key
+  sensitive   = true
+}

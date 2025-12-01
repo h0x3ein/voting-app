@@ -1,0 +1,14 @@
+# Local Terraform files
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+crash.log
+
+# Sensitive inputs
+*.tfvars
+*.json
+
+# OS/editor junk
+.DS_Store
+*.log

@@ -1,3 +1,6 @@
+gcp/secretmanager/key.json
+gcp/cloud_sql/cloudsql-proxy-key.json
+
 # Environment files
 .env
 .env.local
