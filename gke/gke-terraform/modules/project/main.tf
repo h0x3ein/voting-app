@@ -14,3 +14,25 @@ resource "google_project_service" "enable" {
   disable_on_destroy = false
 
 }
+
+
+# GKE Node Service Account
+resource "google_service_account" "gke_nodes" {
+  project      = var.project_id
+  account_id   = "gke-nodes-sa"
+  display_name = "GKE Nodes Service Account"
+}
+
+
+# Minimal IAM for node-level telemetry
+resource "google_project_iam_member" "gke_nodes_log_writer" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
+}
+
+resource "google_project_iam_member" "gke_nodes_metric_writer" {
+  project = var.project_id
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.gke_nodes.email}"
+}
