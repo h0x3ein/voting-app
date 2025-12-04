@@ -21,28 +21,28 @@ module "secrets" {
 
 
 module "network" {
-  source      = "./modules/network"
-  project_id  = var.project_id
-  region      = var.region
+  source       = "./modules/network"
+  project_id   = var.project_id
+  region       = var.region
   network_name = "vote-app-vpc"
 }
 
 module "vm" {
-  source       = "./modules/vm"
-  project_id   = var.project_id
-  name         = "redis-proxy"
-  zone         = var.zone
-  network      = module.network.network_self_link
-  depends_on       = [module.network]
+  source     = "./modules/vm"
+  project_id = var.project_id
+  name       = "redis-proxy"
+  zone       = var.zone
+  network    = module.network.network_self_link
+  depends_on = [module.network]
 }
 
 module "redis" {
-  source           = "./modules/redis"
-  project_id       = var.project_id
-  region           = var.region
-  redis_name       = "my-redis"
+  source            = "./modules/redis"
+  project_id        = var.project_id
+  region            = var.region
+  redis_name        = "my-redis"
   network_self_link = module.network.network_self_link
-  depends_on       = [module.network]
+  depends_on        = [module.network]
 }
 
 
@@ -56,6 +56,6 @@ module "cloudsql" {
   db_user           = var.mysql_user_value
   db_pass           = var.mysql_password_value
   proxy_sa_name     = var.proxy_sa_name
- # key_rotation_id   = var.key_rotation_id
-  depends_on       = [module.network]
+  # key_rotation_id   = var.key_rotation_id
+  depends_on = [module.network]
 }

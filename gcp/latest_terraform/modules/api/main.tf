@@ -1,5 +1,5 @@
 locals {
-  api=[
+  api = [
     "secretmanager.googleapis.com",
     "redis.googleapis.com",
     "compute.googleapis.com",
@@ -11,5 +11,5 @@ locals {
 
 resource "google_project_service" "enable" {
   for_each = toset(local.api)
-  service = each.value
+  service  = each.value
 }
