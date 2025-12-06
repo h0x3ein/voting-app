@@ -1,7 +1,9 @@
 locals {
   api = [
     "container.googleapis.com",
-    "compute.googleapis.com"
+    "compute.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "redis.googleapis.com"
   ]
 }
 
