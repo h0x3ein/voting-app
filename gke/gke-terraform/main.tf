@@ -32,3 +32,11 @@ module "gke" {
 
   depends_on = [module.project, module.network]
 }
+
+module "redis" {
+  source     = "./modules/redis"
+  project_id = var.project_id
+  region     = var.region
+  network_id = module.network.network_id
+  depends_on = [module.project, module.network]
+}
