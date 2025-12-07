@@ -12,7 +12,6 @@ resource "google_redis_instance" "cache" {
   tier           = var.tier
   memory_size_gb = var.memory_size_gb
 
-  port = 6379
 
   redis_configs = {
     "maxmemory-policy" = "allkeys-lru"
