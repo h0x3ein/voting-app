@@ -15,9 +15,9 @@ variable "instance_name" {
 }
 
 variable "database_version" {
-  description = "PostgreSQL version"
+  description = "MySQL version"
   type        = string
-  default     = "POSTGRES_15"
+  default     = "MYSQL_8_0" # Changed from POSTGRES_15 to match app code
 }
 
 variable "tier" {
