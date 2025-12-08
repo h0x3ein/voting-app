@@ -4,7 +4,7 @@ metadata:
   name: result
   namespace: vote-app
 spec:
-  type: LoadBalancer  # Changed from NodePort for GKE
+  type: ClusterIP
   selector:
     app: result
   ports:
