@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result
+  namespace: vote-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: result
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      # Workload Identity: Use KSA that's linked to Cloud SQL GSA
+      serviceAccountName: voting-sa
+      
+      containers:
+      # Main application container
+      - name: result
+        image: h0x3ein/rresult:2e16ed1
+        ports:
+        - containerPort: 3000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: voteapp-config
+        - secretRef:
+            name: voteapp-secret
+        resources:
+          requests:
+            cpu: "100m"        
+            memory: "64Mi"   
+          limits:
+            cpu: "200m"       
+            memory: "128Mi" 
+        
+        livenessProbe:
+          httpGet:
+            path: /health    
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /health  
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+      
+      # Cloud SQL Proxy sidecar container
+      - name: cloud-sql-proxy
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+        args:
+        - "--private-ip"
+        - "$(CLOUD_SQL_CONNECTION_NAME)"
+        - "--port=3306"
+        env:
+        - name: CLOUD_SQL_CONNECTION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: voteapp-config
+              key: CLOUD_SQL_CONNECTION_NAME
+        securityContext:
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"

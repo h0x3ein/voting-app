@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: result
+  namespace: vote-app
+spec:
+  type: LoadBalancer  # Changed from NodePort for GKE
+  selector:
+    app: result
+  ports:
+  - name: result-port
+    port: 80  # External port
+    targetPort: 3000  # Container port
