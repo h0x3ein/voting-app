@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: voteapp-config
+  namespace: vote-app
+data:
+  # Database configuration (PostgreSQL via Cloud SQL Proxy)
+  # Keeping MYSQL_* names for backward compatibility with app code
+  MYSQL_HOST: "127.0.0.1"
+  MYSQL_DATABASE: "voting-app-db"
+  
+  # Redis configuration (Memorystore)
+  REDIS_HOST: "${REDIS_HOST}"
+  REDIS_PORT: "6379"
+  
+  # Cloud SQL Connection Name (for proxy sidecar configuration)
+  CLOUD_SQL_CONNECTION_NAME: "${CLOUD_SQL_CONNECTION_NAME}"
