@@ -9,9 +9,9 @@ metadata:
     kubernetes.io/ingress.allow-http: "true"
 spec:
   rules:
-  - http:
+  - host: vote.armin.hs
+    http:
       paths:
-      # Vote app - root path
       - path: /
         pathType: Prefix
         backend:
@@ -19,8 +19,10 @@ spec:
             name: vote
             port:
               number: 80
-      # Result app - /result path
-      - path: /result
+  - host: result.armin.hs
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
