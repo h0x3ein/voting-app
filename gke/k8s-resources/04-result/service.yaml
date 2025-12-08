@@ -4,7 +4,7 @@ metadata:
   name: result
   namespace: vote-app
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: result
   ports:

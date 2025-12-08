@@ -6,7 +6,7 @@ metadata:
 spec:
   selector: 
     app: vote
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 80
     targetPort: 5000  # Vote app runs on port 5000

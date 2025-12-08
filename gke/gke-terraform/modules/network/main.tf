@@ -70,3 +70,26 @@ resource "google_compute_router_nat" "nat" {
     filter = "ERRORS_ONLY"
   }
 }
+
+# Firewall rule for GCE Load Balancer health checks and proxy traffic
+# Required for Ingress to work with GKE
+resource "google_compute_firewall" "allow_gce_lb" {
+  name    = "allow-gce-health-checks"
+  network = google_compute_network.vpc.name
+  project = var.project_id
+
+  description = "Allow GCE Load Balancer health checks and proxy traffic for Ingress"
+
+  allow {
+    protocol = "tcp"
+  }
+
+  # Google Cloud Load Balancer IP ranges for health checks and proxying
+  source_ranges = [
+    "130.211.0.0/22", # Legacy health check range
+    "35.191.0.0/16"   # Current health check and proxy range
+  ]
+
+  # Apply to all instances in the VPC (including GKE nodes)
+  # You can restrict this further by adding target_tags if needed
+}
