@@ -1,6 +1,11 @@
 module "project" {
   source     = "./modules/project"
   project_id = var.project_id
+
+  # Workload Identity Binding
+  instance_name = var.instance_name
+  ksa_name      = var.ksa_name
+  ksa_namespace = var.ksa_namespace
 }
 
 module "network" {
@@ -39,4 +44,13 @@ module "redis" {
   region     = var.region
   network_id = module.network.network_id
   depends_on = [module.project, module.network]
+}
+
+module "cloud_sql" {
+  source             = "./modules/cloud_sql"
+  project_id         = var.project_id
+  region             = var.region
+  private_network_id = module.network.network_id
+  db_password        = var.db_password
+  depends_on         = [module.project, module.network]
 }
