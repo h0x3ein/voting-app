@@ -7,7 +7,7 @@ terraform {
 
   }
   backend "gcs" {
-    bucket = "my-lab-tfstate-qwiklabs-gcp-03-14e7b1917b1a"
+    bucket = "my-lab-tfstate-qwiklabs-gcp-04-1224fea73900"
     prefix = "vote-app/state"
   }
   required_version = ">= 1.6.0"
