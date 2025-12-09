@@ -1,0 +1,24 @@
+{{- if .Values.vote.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vote
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: vote
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  rules:
+    - host: {{ .Values.vote.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vote
+                port:
+                  number: {{ .Values.vote.service.port }}
+{{- end }}
