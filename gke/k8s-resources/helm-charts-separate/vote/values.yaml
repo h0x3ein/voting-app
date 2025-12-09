@@ -36,4 +36,3 @@ ingress:
         - path: /
           pathType: Prefix
           port: 80
-

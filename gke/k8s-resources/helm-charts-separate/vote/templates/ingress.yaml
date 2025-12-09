@@ -20,7 +20,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "vote.fullname" $ }}
+                name: {{ $.Chart.Name }} # Using chart name directly (no helper)
                 port:
                   number: {{ .port }}
           {{- end }}
