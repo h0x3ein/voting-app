@@ -1,0 +1,79 @@
+# Unified Values for Voting App
+
+# -----------------------------------------------------------------------------
+# GLOBAL CONFIGURATION (Shared by all components)
+# -----------------------------------------------------------------------------
+global:
+  projectID: "my-gcp-project-id"
+  
+  # Database Config (PostgreSQL via Cloud SQL Proxy)
+  db:
+    host: "127.0.0.1"
+    name: "voting-app-db"
+    user: "voting-app-user"
+    password: "" # Set via --set
+    connectionName: "project:region:instance"
+
+  # Redis Config (Memorystore)
+  redis:
+    host: "" # Set via --set
+    port: 6379
+  
+  # Service Account Config (Workload Identity)
+  serviceAccount:
+    name: voting-sa
+    gcpServiceAccount: "voting-app-sql-sa"
+
+
+# -----------------------------------------------------------------------------
+# APP SPECIFIC CONFIGURATION
+# -----------------------------------------------------------------------------
+
+# 1. Vote App (Python Frontend)
+vote:
+  replicaCount: 1
+  image:
+    repository: h0x3ein/rvote
+    tag: "2e16ed1"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 5000
+  ingress:
+    enabled: true
+    host: "vote.armin.hs"
+
+
+# 2. Result App (Node.js Results View)
+result:
+  replicaCount: 1
+  image:
+    repository: h0x3ein/rresult
+    tag: "2e16ed1"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 3000
+  ingress:
+    enabled: true
+    host: "result.armin.hs"
+  cloudsql:
+    enabled: true
+    image: "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0"
+
+
+# 3. Worker App (Java Background Worker)
+worker:
+  replicaCount: 1
+  image:
+    repository: h0x3ein/rworker
+    tag: "2e16ed1"
+    pullPolicy: IfNotPresent
+  cloudsql:
+    enabled: true
+    image: "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0"
+
+# Note: ConfigMap and Secret names are now hardcoded in the global templates 
+# for simplicity, so apps just reference the "release-name-common" conventions.
