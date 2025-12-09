@@ -1,0 +1,24 @@
+{{- if .Values.result.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: result
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: result
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  rules:
+    - host: {{ .Values.result.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: result
+                port:
+                  number: {{ .Values.result.service.port }}
+{{- end }}

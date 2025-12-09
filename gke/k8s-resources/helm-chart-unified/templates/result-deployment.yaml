@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: result
+spec:
+  replicas: {{ .Values.result.replicaCount }}
+  selector:
+    matchLabels:
+      app: result
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      serviceAccountName: {{ .Values.global.serviceAccount.name }}
+      containers:
+        - name: result
+          image: "{{ .Values.result.image.repository }}:{{ .Values.result.image.tag }}"
+          imagePullPolicy: {{ .Values.result.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: voteapp-config
+            - secretRef:
+                name: voteapp-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+
+        {{- if .Values.result.cloudsql.enabled }}
+        - name: cloud-sql-proxy
+          image: {{ .Values.result.cloudsql.image }}
+          args:
+            - "--private-ip"
+            - "$(CLOUD_SQL_CONNECTION_NAME)"
+            - "--port=3306"
+          env:
+            - name: CLOUD_SQL_CONNECTION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: voteapp-config
+                  key: CLOUD_SQL_CONNECTION_NAME
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+        {{- end }}
