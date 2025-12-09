@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      serviceAccountName: {{ .Values.global.serviceAccount.name }}
+      containers:
+        - name: worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: voteapp-config
+            - secretRef:
+                name: voteapp-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+
+        {{- if .Values.worker.cloudsql.enabled }}
+        - name: cloud-sql-proxy
+          image: {{ .Values.worker.cloudsql.image }}
+          args:
+            - "--private-ip"
+            - "$(CLOUD_SQL_CONNECTION_NAME)"
+            - "--port=3306"
+          env:
+            - name: CLOUD_SQL_CONNECTION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: voteapp-config
+                  key: CLOUD_SQL_CONNECTION_NAME
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+        {{- end }}
