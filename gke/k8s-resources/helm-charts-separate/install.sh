@@ -71,7 +71,7 @@ echo "----------------------------------------------------"
 # Result App reads DB config from Common's ConfigMap.
 # We only need to set the Ingress Host.
 helm upgrade --install result ./result \
-  --set ingress.hosts[0].host="result.$DOMAIN_NAME"
+  --set ingress.host="result.$DOMAIN_NAME"
 
 echo ""
 echo "----------------------------------------------------"

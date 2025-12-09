@@ -19,11 +19,11 @@ export PROJECT_ID=$(gcloud config get-value project)
 
 # 2. Redis Host (From Terraform Output)
 # Replace with your actual Redis IP or use terraform output
-export REDIS_HOST=$(cd ../../../gke-terraform && terraform output -raw redis_host)
+export REDIS_HOST=$(cd /../../gke-terraform && terraform output -raw redis_host)
 
 # 3. Cloud SQL Connection Name (From Terraform Output)
 # Format: project:region:instance
-export CLOUD_SQL_CONNECTION_NAME=$(cd ../../../gke-terraform && terraform output -raw cloud_sql_instance_connection_name)
+export CLOUD_SQL_CONNECTION_NAME=$(cd ../../gke-terraform && terraform output -raw cloud_sql_instance_connection_name)
 
 # 4. Database Password
 # Ensure this matches what you set in Terraform/Cloud SQL
@@ -67,7 +67,7 @@ helm upgrade --install vote ./vote \
 **Step 3: Install Result App**
 ```bash
 helm upgrade --install result ./result \
-  --set ingress.hosts[0].host="result.$DOMAIN_NAME"
+  --set ingress.hosts.host="result.$DOMAIN_NAME"
 ```
 
 **Step 4: Install Worker App**

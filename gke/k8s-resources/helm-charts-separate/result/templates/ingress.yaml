@@ -11,17 +11,13 @@ metadata:
   {{- end }}
 spec:
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+          - path: /
+            pathType: Prefix
             backend:
               service:
-                name: {{ $.Chart.Name }}
+                name: {{ .Chart.Name }}
                 port:
-                  number: {{ .port }}
-          {{- end }}
-    {{- end }}
+                  number: 80
