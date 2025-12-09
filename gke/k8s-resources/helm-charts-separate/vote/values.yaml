@@ -24,3 +24,16 @@ resources:
   limits:
     cpu: "200m"
     memory: "128Mi"
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "true"
+  hosts:
+    - host: vote.armin.hs
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 80
+
