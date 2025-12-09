@@ -10,6 +10,7 @@ db:
   host: "127.0.0.1"
   name: "voting-app-db"
   user: "voting-app-user"
+  password: "" # Set this via --set or external secret management
   # connectionName will be used by the Cloud SQL proxy
   connectionName: "project:region:instance"
 
