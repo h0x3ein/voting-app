@@ -1,0 +1,40 @@
+replicaCount: 1
+
+image:
+  repository: h0x3ein/rworker
+  pullPolicy: IfNotPresent
+  tag: "2e16ed1"
+
+# Worker has no service!
+
+# Configuration for referencing shared resources
+configMap:
+  name: voteapp-config
+  connectionNameKey: CLOUD_SQL_CONNECTION_NAME
+
+secret:
+  name: voteapp-secret
+
+serviceAccount:
+  name: voting-sa # Shared SA name
+
+cloudsql:
+  enabled: true
+  image:
+    repository: gcr.io/cloud-sql-connectors/cloud-sql-proxy
+    tag: "2.1.0"
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "128Mi"
+  limits:
+    cpu: "400m"
+    memory: "256Mi"
