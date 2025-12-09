@@ -1,0 +1,24 @@
+# Default values for common.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  projectID: "my-gcp-project-id"
+
+# Database Configuration (PostgreSQL)
+db:
+  host: "127.0.0.1"
+  name: "voting-app-db"
+  user: "voting-app-user"
+  # connectionName will be used by the Cloud SQL proxy
+  connectionName: "project:region:instance"
+
+# Redis Configuration (Memorystore)
+redis:
+  host: ""
+  port: 6379
+
+# Service Account Configuration
+serviceAccount:
+  name: voting-sa
+  gcpServiceAccount: "voting-app-sql-sa"
