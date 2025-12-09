@@ -1,0 +1,26 @@
+replicaCount: 1
+
+image:
+  repository: h0x3ein/rvote
+  pullPolicy: IfNotPresent
+  tag: "2e16ed1"
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 5000
+
+# Configuration for referencing shared resources
+configMap:
+  name: voteapp-config # Matches common chart
+
+secret:
+  name: voteapp-secret # Matches common chart
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"
