@@ -13,7 +13,7 @@ variable "subnet_name" {
 
 variable "subnet_primary_cidr" {
   type    = string
-  default = "10.10.0.0/20"
+  default = "10.0.0.0/20"
 }
 
 variable "pods_secondary_cidr" {
